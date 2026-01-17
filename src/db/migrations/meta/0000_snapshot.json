@@ -1,5 +1,5 @@
 {
-  "id": "8f8bcc45-5257-4a37-aaa2-5c7274a9a7ce",
+  "id": "b338ee47-5a85-49e0-b6b5-31cb7494acdd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -325,14 +325,20 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "identifier": {
-          "name": "identifier",
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "google_sub": {
+          "name": "google_sub",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "password": {
-          "name": "password",
+        "passwordHashed": {
+          "name": "passwordHashed",
           "type": "varchar(150)",
           "primaryKey": false,
           "notNull": false
@@ -372,18 +378,18 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_auth_identifier_unique": {
-          "name": "user_auth_identifier_unique",
+        "user_auth_email_unique": {
+          "name": "user_auth_email_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "identifier"
+            "email"
           ]
         },
-        "user_auth_password_unique": {
-          "name": "user_auth_password_unique",
+        "user_auth_google_sub_unique": {
+          "name": "user_auth_google_sub_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "password"
+            "google_sub"
           ]
         }
       },
@@ -711,6 +717,72 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.refresh_token": {
+      "name": "refresh_token",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userID": {
+          "name": "userID",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hashed": {
+          "name": "token_hashed",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isRevoked": {
+          "name": "isRevoked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "refresh_token_userID_user_auth_id_fk": {
+          "name": "refresh_token_userID_user_auth_id_fk",
+          "tableFrom": "refresh_token",
+          "tableTo": "user_auth",
+          "columnsFrom": [
+            "userID"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.reviews": {
       "name": "reviews",
       "schema": "",
@@ -796,7 +868,8 @@
       "schema": "public",
       "values": [
         "EMAIL",
-        "GOOGLE"
+        "GOOGLE",
+        "BOTH"
       ]
     },
     "public.role": {

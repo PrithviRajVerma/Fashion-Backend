@@ -1,4 +1,4 @@
-CREATE TYPE "public"."auth_provider" AS ENUM('EMAIL', 'GOOGLE');--> statement-breakpoint
+CREATE TYPE "public"."auth_provider" AS ENUM('EMAIL', 'GOOGLE', 'BOTH');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('USER', 'STAFF', 'ADMIN');--> statement-breakpoint
 CREATE TYPE "public"."orderStatus" AS ENUM('PLACED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELED', 'RETURNED');--> statement-breakpoint
 CREATE TYPE "public"."paymentStatus" AS ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED');--> statement-breakpoint
@@ -49,14 +49,15 @@ CREATE TABLE "products" (
 --> statement-breakpoint
 CREATE TABLE "user_auth" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"identifier" varchar(255) NOT NULL,
-	"password" varchar(150),
+	"email" varchar(100) NOT NULL,
+	"google_sub" varchar(255) NOT NULL,
+	"passwordHashed" varchar(150),
 	"auth_provider" "auth_provider" DEFAULT 'GOOGLE' NOT NULL,
 	"role" "role" DEFAULT 'USER' NOT NULL,
 	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "user_auth_identifier_unique" UNIQUE("identifier"),
-	CONSTRAINT "user_auth_password_unique" UNIQUE("password")
+	CONSTRAINT "user_auth_email_unique" UNIQUE("email"),
+	CONSTRAINT "user_auth_google_sub_unique" UNIQUE("google_sub")
 );
 --> statement-breakpoint
 CREATE TABLE "orders" (
@@ -101,6 +102,15 @@ CREATE TABLE "inventory" (
 	"lowStockThreshold" integer DEFAULT 5
 );
 --> statement-breakpoint
+CREATE TABLE "refresh_token" (
+	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
+	"userID" uuid NOT NULL,
+	"token_hashed" varchar(255) NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"isRevoked" boolean DEFAULT false NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "reviews" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -120,5 +130,6 @@ ALTER TABLE "orderItems" ADD CONSTRAINT "orderItems_variantId_product_variants_i
 ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_profile" ADD CONSTRAINT "user_profile_id_user_auth_id_fk" FOREIGN KEY ("id") REFERENCES "public"."user_auth"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "inventory" ADD CONSTRAINT "inventory_id_product_variants_id_fk" FOREIGN KEY ("id") REFERENCES "public"."product_variants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "refresh_token" ADD CONSTRAINT "refresh_token_userID_user_auth_id_fk" FOREIGN KEY ("userID") REFERENCES "public"."user_auth"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_user_profile_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user_profile"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;
