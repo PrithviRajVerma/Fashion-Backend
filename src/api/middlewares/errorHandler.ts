@@ -13,10 +13,8 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     // Log details
     logger.error({
         status: error.status,
-        message: error.message,
-        // errors: error.errors,
-        method: req.method,
-        path: req.url,
+        message: err?.message,
+        stack: process.env.NODE_ENV === "development" ? err?.stack : undefined,
     });
 
     return res

@@ -12,7 +12,10 @@ export class ApiError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 
-    static badRequest(message = "Bad Request", errors = null) {
+    static badRequest(
+        message: string = "Bad Request",
+        errors: any = null
+    ): ApiError {
         return new ApiError(400, message, errors);
     }
 
