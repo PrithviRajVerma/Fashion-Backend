@@ -6,16 +6,13 @@ import authRoutes from "./api/routes/authRoutes.ts";
 
 export const app = express();
 
-
 app.use(express.json());
 app.use(requestLogger);
 app.use(
     session({
-        secret: process.env.SESSION_SECRET as string,
+        secret: String(process.env.SESSION_SECRET || "bun-dev-secret"),
         resave: false,
         saveUninitialized: false,
-        name: "app.sid",
-
         cookie: {
             httpOnly: true,
             secure: false,
@@ -26,15 +23,19 @@ app.use(
 
 
 // Routes
+app.get("/", (req, res) => {
+    return res.status(200).json({
+        success: true,
+        message: "Service is alive",
+        time: Date.now(),
+    });
+});
 app.use("/api/v1/auth", authRoutes);
-// app.use("/api/v1/products", productRoutes);
-// app.use("/api/v1/auth", userRoutes);
-// app.use("api/v1/admin", adminRoutes);
 
 // 404 Handler
 app.use((req, res) => {
     res.status(404).json({ success: false, message: "Route Not Found" });
 });
 
-// Global Error Handler (last)
+// Global Error Handler
 app.use(errorHandler);
