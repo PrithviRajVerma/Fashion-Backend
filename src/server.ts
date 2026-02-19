@@ -2,9 +2,7 @@ import "dotenv/config";
 import { app } from "./app";
 import { logger } from "./utils/logger";
 
-/* ─── PORT HANDLING ─── */
 
-// keep PORT strictly as string then convert to number
 const PORT = Number(String(process.env.PORT || "3000").trim());
 
 if (!PORT || isNaN(PORT)) {
@@ -12,19 +10,14 @@ if (!PORT || isNaN(PORT)) {
     throw new Error("Server cannot start — PORT is invalid");
 }
 
-/* ─── GLOBAL ERROR CAPTURE ─── */
-
-// catches async errors not awaited
 process.on("unhandledRejection", (reason) => {
     logger.error({ reason }, "Unhandled Promise Rejection");
 });
 
-// catches thrown exceptions in sync code
 process.on("uncaughtException", (error) => {
     logger.fatal({ error }, "Uncaught Exception — crashing");
 });
 
-/* ─── STARTUP WRAPPER ─── */
 
 function startServer() {
     try {
@@ -35,13 +28,10 @@ function startServer() {
             );
         });
 
-        /* ─── DEBUG HELPERS ─── */
-
         server.on("error", (error: any) => {
             logger.fatal({ error }, "Server failed to bind PORT");
         });
 
-        /* ─── GRACEFUL SHUTDOWN ─── */
 
         process.on("SIGTERM", () => {
             logger.info("SIGTERM received — shutting down");
@@ -57,7 +47,5 @@ function startServer() {
         throw error;
     }
 }
-
-/* ─── INIT ─── */
 
 export const server = startServer();

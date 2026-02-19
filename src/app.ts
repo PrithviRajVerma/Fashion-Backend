@@ -2,7 +2,8 @@ import express from "express";
 import session from "express-session";
 import { requestLogger } from "./api/middlewares/requestLogger";
 import { errorHandler } from "./api/middlewares/errorHandler";
-import authRoutes from "./api/routes/authRoutes.ts";
+import authRoutes from "./api/routes/auth.ts";
+import productRoutes from "./api/routes/product.ts";
 
 export const app = express();
 
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
     });
 });
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/product", productRoutes);
 
 // 404 Handler
 app.use((req, res) => {

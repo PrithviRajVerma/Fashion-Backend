@@ -1,5 +1,5 @@
 {
-  "id": "b338ee47-5a85-49e0-b6b5-31cb7494acdd",
+  "id": "0cb9ea3b-6835-4b4f-a05f-8bc3c4293d88",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -335,21 +335,20 @@
           "name": "google_sub",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "passwordHashed": {
-          "name": "passwordHashed",
+        "password_hashed": {
+          "name": "password_hashed",
           "type": "varchar(150)",
           "primaryKey": false,
           "notNull": false
         },
-        "auth_provider": {
-          "name": "auth_provider",
-          "type": "auth_provider",
+        "provider": {
+          "name": "provider",
+          "type": "provider",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'GOOGLE'"
+          "notNull": false
         },
         "role": {
           "name": "role",
@@ -863,8 +862,8 @@
     }
   },
   "enums": {
-    "public.auth_provider": {
-      "name": "auth_provider",
+    "public.provider": {
+      "name": "provider",
       "schema": "public",
       "values": [
         "EMAIL",

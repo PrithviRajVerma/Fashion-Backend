@@ -1,4 +1,4 @@
-CREATE TYPE "public"."auth_provider" AS ENUM('EMAIL', 'GOOGLE', 'BOTH');--> statement-breakpoint
+CREATE TYPE "public"."provider" AS ENUM('EMAIL', 'GOOGLE', 'BOTH');--> statement-breakpoint
 CREATE TYPE "public"."role" AS ENUM('USER', 'STAFF', 'ADMIN');--> statement-breakpoint
 CREATE TYPE "public"."orderStatus" AS ENUM('PLACED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELED', 'RETURNED');--> statement-breakpoint
 CREATE TYPE "public"."paymentStatus" AS ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED');--> statement-breakpoint
@@ -50,9 +50,9 @@ CREATE TABLE "products" (
 CREATE TABLE "user_auth" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" varchar(100) NOT NULL,
-	"google_sub" varchar(255) NOT NULL,
-	"passwordHashed" varchar(150),
-	"auth_provider" "auth_provider" DEFAULT 'GOOGLE' NOT NULL,
+	"google_sub" varchar(255),
+	"password_hashed" varchar(150),
+	"provider" "provider",
 	"role" "role" DEFAULT 'USER' NOT NULL,
 	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now() NOT NULL,

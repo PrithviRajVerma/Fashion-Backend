@@ -145,7 +145,7 @@ export const googleCallback = asyncHandler(async (req, res) => {
     };
 
     const existingUser = await db.query.userAuth.findFirst({
-        where: eq(userAuth.googleSub, userData.googleSub)});
+        where: eq(userAuth.email, userData.email)});
 
     let user : userDTO;
 
